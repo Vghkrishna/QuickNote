@@ -3,23 +3,18 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
-// Route files
 const authRoutes = require('./routes/auth');
 const notesRoutes = require('./routes/notes');
 
 const app = express();
 
-// Body parser
 app.use(express.json());
 
-// Enable CORS
 app.use(cors());
 
-// Mount routers
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', notesRoutes);
 
-// Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ success: false, message: 'Server Error' });
@@ -27,7 +22,6 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-// Connect to Database and start server
 const startServer = async () => {
   try {
     if (!process.env.MONGO_URI) {

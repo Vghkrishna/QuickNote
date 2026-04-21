@@ -4,11 +4,8 @@ const { protect } = require('../middleware/auth');
 
 const router = express.Router();
 
-// All note routes are protected
 router.use(protect);
 
-// @route   GET /api/notes
-// @desc    Get all notes for logged in user
 router.get('/', async (req, res) => {
   try {
     const notes = await Note.find({ userId: req.user.id }).sort({ createdAt: -1 });
@@ -18,15 +15,12 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @route   GET /api/notes/:id
-// @desc    Get single note
 router.get('/:id', async (req, res) => {
   try {
     const note = await Note.findById(req.params.id);
     if (!note) {
       return res.status(404).json({ success: false, message: 'Note not found' });
     }
-    // Make sure user owns the note
     if (note.userId.toString() !== req.user.id) {
       return res.status(401).json({ success: false, message: 'Not authorized to access this note' });
     }
@@ -36,8 +30,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// @route   POST /api/notes
-// @desc    Create new note
 router.post('/', async (req, res) => {
   try {
     req.body.userId = req.user.id;
@@ -48,15 +40,12 @@ router.post('/', async (req, res) => {
   }
 });
 
-// @route   PUT /api/notes/:id
-// @desc    Update note
 router.put('/:id', async (req, res) => {
   try {
     let note = await Note.findById(req.params.id);
     if (!note) {
       return res.status(404).json({ success: false, message: 'Note not found' });
     }
-    // Make sure user owns the note
     if (note.userId.toString() !== req.user.id) {
       return res.status(401).json({ success: false, message: 'Not authorized to update this note' });
     }
@@ -72,15 +61,12 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// @route   DELETE /api/notes/:id
-// @desc    Delete note
 router.delete('/:id', async (req, res) => {
   try {
     const note = await Note.findById(req.params.id);
     if (!note) {
       return res.status(404).json({ success: false, message: 'Note not found' });
     }
-    // Make sure user owns the note
     if (note.userId.toString() !== req.user.id) {
       return res.status(401).json({ success: false, message: 'Not authorized to delete this note' });
     }
