@@ -31,18 +31,23 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   try {
     if (!process.env.MONGO_URI) {
-      console.warn('MONGO_URI is not defined in .env! Cannot connect to MongoDB.');
-      console.warn('Server will start, but database operations will fail.');
+      console.error('CRITICAL ERROR: MONGO_URI is not defined! Please check your Render environment variables.');
+      process.exit(1);
     } else {
+      console.log('Attempting to connect to MongoDB...');
       const conn = await mongoose.connect(process.env.MONGO_URI);
-      console.log(`MongoDB Connected: ${conn.connection.host}`);
+      console.log(`Successfully connected to MongoDB: ${conn.connection.host}`);
     }
     
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`Server is live and running on port ${PORT}`);
     });
   } catch (error) {
-    console.error(`Error connecting to database: ${error.message}`);
+    console.error('----------------------------------------------------');
+    console.error('DATABASE CONNECTION FAILED!');
+    console.error(`Error details: ${error.message}`);
+    console.error('If this is a "timeout" or "refused" error, please ensure you have whitelisted IP 0.0.0.0/0 in MongoDB Atlas.');
+    console.error('----------------------------------------------------');
     process.exit(1);
   }
 };
